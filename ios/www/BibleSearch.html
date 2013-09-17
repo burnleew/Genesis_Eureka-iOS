@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+
+<head>
+  <link rel="image_src" href="images/loading2.gif" / >
+  <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320"/>
+  <meta name="viewport" content="width=100%; initial-scale=1.0;maximum-scale=1.0; user-scalable=no">
+  <link href="css/NU.css" rel="stylesheet" type="text/css" />
+  <title>Genesis</title>
+
+    
+	</head>
+	<body onload="onloadme();">
+        <h1>Bible</h1>
+        <div id="progress" style="display:none;">Loading...<br/><img src="images/loading2.gif" alt=""/></div>
+        <div id="searchBar">
+                <input type="search" placeholder="Search" class="txtBibleSearch" id="SearchText" name="SearchText"></input>
+        </div>
+        
+        <div id="audio_position" class="esv_audio_position"></div>
+        
+        <div id="Aa"      class="btnTopRight btnTopRightLeft"
+            ontouchend="x$('#Aa').removeClass('Aa_active');"
+            ontouchstart="x$('#Aa').addClass('Aa_active');" >&nbsp;</div>
+        <div id="btnHome" class="btnTopLeft  btnTopRightLeft"
+            ontouchend="x$('#btnHome').removeClass('btnHome_active');"
+            ontouchstart="x$('#btnHome').addClass('btnHome_active');" >&nbsp;</div>
+        
+		<div id="menuBtn" class="textResize green">
+			<div id="textResizeSmaller" class="textResizeSmallerBigger"  >
+				<span style="font-size:1.2em;">A</span>
+				<span style="font-size:1.0em;">A</span>
+				<span style="font-size:0.7em;">A</span>
+			</div>
+			
+			<div id="textResizeBigger"  class="textResizeSmallerBigger" >
+				<div class="textResizeBorder"></div> 
+				<span style="font-size:0.7em;">A</span>
+				<span style="font-size:1.0em;">A</span>
+				<span style="font-size:1.2em;">A</span>
+			</div>
+
+			<div class="textResizeClose" id="closeResize">Close</div>
+		</div>
+	
+		<div id="schedules"></div>
+    	<div class="esv copyright">Scripture taken from The Holy Bible, English Standard Version. Copyright &copy;2001 by <span id="link1" class="link_like">Crossway Bibles</span>, a publishing ministry of Good News Publishers. Used by permission. All rights reserved. Text provided by the <span id="link2" class="link_like">Crossway Bibles Web Service</span>.</div>
+    </body>
+    
+    
+    
+    
+    
+    
+<script language="JavaScript" type="text/javascript" src="js/libs/xui.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/NU.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/mylibs/helper.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/libs/json2.js"></script>
+<script>
+var i = 0;
+var done = true;
+var myaudio;
+
+function onDeviceReady() {
+  document.addEventListener("menubutton", showMenuBtn, false);
+  var timerId = setInterval(
+        function() {
+            if (done) {
+                hideLoader();
+            }
+        }, 3000);
+}
+
+new MBP.fastButton(document.getElementById("link1" ), function() {window.open("http://www.crosswaybibles.org","_blank"); });
+new MBP.fastButton(document.getElementById("link2" ), function() {window.open("http://www.gnpcb.org/esv/share/services/","_blank"); });
+
+function showMenuBtn() {
+	x$('#menuBtn').getStyle('display', function(prop){
+		if (prop == 'block')			
+			x$('#menuBtn').setStyle('display','none');
+		else
+			x$('#menuBtn').setStyle('display','inline-block');
+	});
+}
+function onloadme(){
+  document.addEventListener("deviceready", onDeviceReady, false);
+  window.addEventListener('popstate', function(e){
+  			loadHistory(e.state.content);
+  }, false);  
+  x$('#SearchText').on('keyup', function(e){if (e.keyCode == 13) ESV_Search();});
+}
+
+new MBP.fastButton(document.getElementById("textResizeSmaller"), function() { resizeText(-1); });
+new MBP.fastButton(document.getElementById("textResizeBigger" ), function() { resizeText(1);  });
+new MBP.fastButton(document.getElementById("closeResize" ),      function() { showMenuBtn();  });
+new MBP.fastButton(document.getElementById("btnHome" ),          function() { redirect('index.html');return false;  });
+new MBP.fastButton(document.getElementById("Aa" ),               function() { showMenuBtn();  });
+
+
+function loadHistory(content) {
+	x$('#schedules').html(content);
+	add_HREF_Intercepts();
+}
+
+
+function ESV_WebService(myHREF) {
+    done= false;
+	window.scrollTo(0,0);
+	showLoader('Loading...');
+	//html5audio.play();
+	x$('#audio_position').setStyle('display','none');
+	
+	x$(window).xhr(myHREF, {
+    	async: true,
+    	method: "get",   
+    	callback: function(){
+     		x$('#schedules').html(this.responseText);
+     		localStorage.setItem("Bible_" + i, this.responseText);
+     		var stateObj = {content: this.responseText};
+     		history.pushState(stateObj,"page" , "bar.html");
+     		i++;
+     		
+			add_HREF_Intercepts();
+    	}
+    	
+  	});
+    
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    var progressTimer;
+    
+    var playButton;
+    var textPosition= document.getElementById('audio_position');
+    
+    
+    
+    function onError(error)
+    {
+        console.log(error.message);
+    }
+    
+    function onConfirmRetry(button) {
+        if (button == 1) {
+            html5audio.play();
+        }
+    }
+    
+    function pad2(number) {
+        return (number < 10 ? '0' : '') + number
+    }
+    
+    var myaudioURL;
+    
+    var isPlaying = false;
+    var readyStateInterval = null;
+    
+    var html5audio = {
+        play: function()
+        {
+            if (!isPlaying) {
+                
+                x$(textPosition).setStyle('display','block');
+                x$(playButton).html('Pause');
+                showLoader('Loading...');
+                
+                isPlaying = true;
+                myaudio.play();
+                
+                /* readyStateInterval = setInterval(function(){
+                 if (myaudio.readyState <= 2) {
+                 //playButton.style.display = 'none';
+                 //activityIndicator.style.display = 'block';
+                 }
+                 },1000);*/
+                myaudio.addEventListener("timeupdate", function() {
+                                         
+                                         var s = parseInt(myaudio.currentTime % 60);
+                                         var m = parseInt((myaudio.currentTime / 60) % 60);
+                                         var h = parseInt(((myaudio.currentTime / 60) / 60) % 60);
+                                         if (isPlaying && myaudio.currentTime > 0) {
+                                            textPosition.innerHTML = pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+                                         }
+                                         
+                                         
+                                         }, false);
+                myaudio.addEventListener("error", function() {
+                                         console.log('myaudio ERROR');
+                                         }, false);
+                myaudio.addEventListener("canplay", function() {
+                                         console.log('myaudio CAN PLAY');
+                                         }, false);
+                myaudio.addEventListener("waiting", function() {
+                                         //console.log('myaudio WAITING');
+                                         isPlaying = false;
+                                         
+                                         }, false);
+                myaudio.addEventListener("playing", function() {
+                                         isPlaying = true;
+                                         hideLoader();
+                                         
+                                         }, false);
+                myaudio.addEventListener("ended", function() {
+                                         //console.log('myaudio ENDED');
+                                         html5audio.stop();
+                                         // navigator.notification.alert('Streaming failed. Possibly due to a network error.', null, 'Stream error', 'OK');
+                                         navigator.notification.confirm(
+                                                                        'Streaming failed. Possibly due to a network error.', // message
+                                                                        onConfirmRetry,	// callback to invoke with index of button pressed
+                                                                        'Stream error',	// title
+                                                                        'Retry,OK'		// buttonLabels
+                                                                        );
+                                         }, false);
+            }
+            else {
+                
+                isPlaying = false;
+                //clearInterval(readyStateInterval);
+                myaudio.pause();
+                x$(playButton).html('Listen');
+                
+            }
+        },
+        
+        stop: function() {
+            isPlaying = false;
+            //clearInterval(readyStateInterval);
+            myaudio.pause();
+            
+            x$(playButton).html('Listen');
+            //x$('.audio_container').setStyle('display','none');
+            //playing = false;
+            textPosition.innerHTML = toHHMMSS(0);
+            
+            myaudio = null;
+            myaudio = new Audio(myaudioURL);
+            hideLoader();
+        }
+    };
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+
+function add_HREF_Intercepts(){
+   	x$('a').on('click', function(e) {
+  		var me = x$(this).attr('href').toString();
+  		//var xs=this;
+  		//var classes = xs.parentNode.className;
+  		if (me.indexOf('#') === 0)
+  		{
+  			//do nothing
+  		}
+  		else if (me.indexOf('stream.esvmedia.org') != -1) 
+  		{
+  			//playAudio(me);   - this is now done below, in a fast button
+  		}
+  		else
+  		{
+  			e.preventDefault();
+  			var myURL = x$(this).attr('href').toString();
+  			ESV_WebService(myURL.replace(/gnpcb/gi, 'esvapi'));
+  		}
+  		return false;
+  	});
+
+	
+    // Trying to remove pipes, but this ends up breaking the links.
+	//var test = x$('.surrounding-chapters').html().toString();
+    //test = test.replace(/\|/g, '&nbsp;');alert(test);
+    //x$('.surrounding-chapters').html(test);
+    
+  	x$('.surrounding-chapters a').each(function(element){
+  		var myString = x$(this).html().toString();
+  		
+  		if (myString.indexOf('&gt;') != -1)
+  			myString = '&gt;&gt;';
+  		else if (myString.indexOf('&lt;') != -1)
+  			myString = '&lt;&lt;';
+  		x$(this).html(myString);
+  	});
+    
+    
+  	
+  	
+  	//remove parentheses from around (Listen) link
+  	var audioHTML = x$('.audio').html().toString();
+  	audioHTML = audioHTML.substring(1, audioHTML.length - 1);
+    
+  	x$('.audio').html(audioHTML);
+  	
+    
+    var myListenBtn = x$('.audio a')[0];
+  	if (myListenBtn){
+	  	x$(myListenBtn).attr('ontouchstart','x$(".audio a")[0].addClass("mainbtn_TouchStart");');
+  		x$(myListenBtn).attr('ontouchend','x$(".audio a")[0].removeClass("mainbtn_TouchStart");');
+  		
+        playButton = myListenBtn;
+        
+        myaudio = null;
+        myaudioURL = x$(myListenBtn).attr('href').toString();
+        myaudio = new Audio();
+        myaudio.src = myaudioURL;
+        
+        
+        new MBP.fastButton(myListenBtn, function() {
+                           html5audio.play();return false;
+                           });
+    }
+    
+  	x$('#menuBtn').setStyle('display','block');
+  	x$('#menuBtn').setStyle('display','none');
+  	
+    hideLoader();
+    done = true;
+}
+
+function ESV_Search() {
+  checkConnection();
+  var SearchText = document.getElementById('SearchText');
+  if (SearchText.value != null && SearchText.value != '')
+	  ESV_WebService('http://www.esvapi.org/v2/rest/query?key=cfe523dd2201c04d&include-surrounding-chapters=true&audio-format=mp3&q=' + SearchText.value);
+  else
+  	alert('Please enter something in the Search box.');
+}
+    
+    
+    
+    
+    
+    
+    
+        
+    
+</script>
+</html>

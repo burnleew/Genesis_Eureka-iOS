@@ -1,0 +1,179 @@
+<html manifest="default.appcache?v=1" class="no-js"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js" manifest="default.appcache?v=1"> <!--<![endif]-->
+
+<head>
+  <link rel="image_src" href="images/loading2.gif" / >
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script language="JavaScript" type="text/javascript" src="js/libs/xui.js"></script>
+  <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+  <link href="css/NU.css" rel="stylesheet" type="text/css" />
+  <title>Events</title>
+
+
+    <body  onload="onloadme();">
+    <style type="text/css">
+   
+    #progress{
+        top: 50%;
+    }
+    
+    </style>
+    <h1 class="no_bottom_border">Events</h1>
+    <div id="btnHome" class="btnTopLeft  btnTopRightLeft"
+            ontouchend="x$('#btnHome').removeClass('btnHome_active');"
+            ontouchstart="x$('#btnHome').addClass('btnHome_active');" >&nbsp;</div>
+    <div id="tweets"></div>
+    <div id="progress" style="display:none;">Loading...<br/><img src="images/loading2.gif" alt=""/><br/><br/></div>
+    <div align="center">
+        <div id="Play" class="mainbtn hide_on_load green">
+              Load More
+        </div>
+    </div>
+    
+    <script src="js/NU.js"></script>
+    <script src="js/libs/json2.js"></script>
+	<script src="js/mylibs/helper.js"></script>
+    
+    <script type="text/javascript">
+    var pageNumber = 1;
+    var maxID = -1;
+    
+    function onloadme(){
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    function onDeviceReady() {
+        document.addEventListener("menubutton", showAlertTweets, false);
+        if (checkConnection())
+            LoadIt();
+    }
+
+        new MBP.fastButton(document.getElementById("Play" ), function() { if (checkConnection()) { document.getElementById('Play').innerHTML='Loading...';LoadIt();}  });
+    new MBP.fastButton(document.getElementById("btnHome" ), function() { redirect('index.html');return false;  });
+    
+    function showAlertTweets() {
+        navigator.notification.alert(
+            "Tap the Load More button at the bottom for more Events.  Sorry, these are read only; no posting to Google Calendar available at this time.",
+            k,
+            'Tip:',
+            'Help'
+        );
+    }
+
+    function parseDate(input){
+    	var ret;
+    	var inputs = input.split('T');
+    	var parts = inputs[0].match(/(\d+)/g);
+    	
+    	if (inputs[1] != undefined) {
+	    	var time = inputs[1].split(':');
+	    	ret = new Date(parts[0], parts[1]-1, parts[2], time[0], time[1], time[2]);
+    	}
+    	else {
+    		ret = new Date(parts[0], parts[1]-1, parts[2]);
+    	}
+    	return ret;
+    }
+    
+    function formatTime(myDate){
+    	var hours = myDate.getHours();
+    	var min = myDate.getMinutes();
+    	if (min < 10)
+    		min = "0" + min;
+    	var suffix = "am";
+    	if (hours >= 12) {
+    		suffix = "pm";
+    		hours = hours - 12;
+    	}
+    	if (hours == 0)
+    		hours = 12;
+    	return hours + ":" + min + suffix;
+    }
+
+    function ptweet(read)
+    {
+        read = JSON.parse(read);
+        read = read.feed;
+        read = read.entry;
+        
+		var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		var dowNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var tdata='';
+        
+        for (i in read)
+        {
+          	data =read[i];
+          	var id = data.gd$when[0].startTime.substring(0,19);
+          	if (maxID == id) {
+            	continue;  //skip out of loop to next if first tweet of next series is the same as the last of the previous series
+          	}
+          
+          	maxID = id;
+          	var text=data.content.$t;
+          	var startDate = new Date(parseDate(data.gd$when[0].startTime.substring(0,19)));
+          	var endDate = new Date(parseDate(data.gd$when[0].endTime.substring(0,19)));
+          	var screen_name=data.title.$t;
+          	var image=data.gd$where[0].valueString;
+          
+          
+          	tdata+="<div class='status' id='"+id+"'>" + 
+            	"<div class='date_container floatLeft'>" +
+    			"  <div class='date_month'>" + monthNames[startDate.getMonth()] + "</div>" + 
+    			"  <div class='date_day'>" + startDate.getDate() + "</div>" +
+    			"  <div class='date_year'>" + startDate.getFullYear() + "</div>" + 
+    			"</div>" + 
+    			"<div class='bar' style='height:48px;'></div>" + 
+    			"<div style='overflow:hidden;'>" + 
+    			"   <div class='font_18'>" + screen_name + "</div>";
+    	  	if (startDate.getDate() != endDate.getDate())
+		  		tdata += "   <div class='font_11 secondaryText'>" + dowNames[startDate.getDay()] + " " + monthNames[startDate.getMonth()] + " " + startDate.getDate() + ", " + startDate.getFullYear() + " - "  + dowNames[endDate.getDay()] + " " + monthNames[endDate.getMonth()] + " " + endDate.getDate() + ", " + endDate.getFullYear() + "</div>";
+		  	else
+		  		tdata += "   <div class='font_11 secondaryText'>" + dowNames[startDate.getDay()] + " " + monthNames[startDate.getMonth()] + " " + startDate.getDate() + ", " + startDate.getFullYear() + " " + formatTime(startDate) + " - " + formatTime(endDate) +  "</div>";
+    		tdata += "   <div class='font_11 secondaryText'>" + image + "</div>" + 
+    			"   <div class='font_11' id='txt'>" + text + "</div>" + 
+    			"</div>" + 
+    			"</div>";
+
+        }
+        
+        document.getElementById("tweets").innerHTML += tdata;
+        hideLoader();
+        document.getElementById('Play').style.display='block';
+        document.getElementById('Play').innerHTML = 'Load More';
+    }
+
+
+	function LoadIt() {
+		showLoader('Loading...');
+        
+   		var myURL='';
+   
+   		if (maxID == -1)
+     		myURL = 'http://www.google.com/calendar/feeds/genesiseureka@gmail.com/public/full?alt=json&orderby=starttime&max-results=15&singleevents=true&sortorder=ascending&futureevents=true';
+   		else
+     		myURL = 'http://www.google.com/calendar/feeds/genesiseureka@gmail.com/public/full?alt=json&orderby=starttime&max-results=15&singleevents=true&sortorder=ascending&start-min=' + maxID;
+   		
+ 
+   		x$(window).xhr(myURL, {
+     		//async: true,
+     		method: "get",  
+     		callback: function(){
+       			ptweet(this.responseText);
+     		},
+     		error: function(){
+     			alert("Looks like there was an issue.  Please try again later.");
+     		}    
+  		});
+  		
+  		pageNumber++;
+	}
+	
+    </script>
+
+    </body>
+    </html>

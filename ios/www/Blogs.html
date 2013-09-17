@@ -1,0 +1,192 @@
+<html manifest="default.appcache?v=1" class="no-js"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js" manifest="default.appcache?v=1"> <!--<![endif]-->
+
+<head>
+  <link rel="image_src" href="images/loading2.gif" / >
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script language="JavaScript" type="text/javascript" src="js/libs/xui.js"></script>
+  <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+  <link href="css/NU.css" rel="stylesheet" type="text/css" />
+  <title>Blog</title>
+
+
+    <body  onload="onloadme();">
+    <style type="text/css">
+    body{
+      font-family: Helvetica;
+    }
+    
+    #txt {
+font-size: 13px;
+}
+    .status
+    {
+      min-height:60px;
+      padding:6px;
+      font-size: 15px;
+      background:transparent;
+      border-bottom:#333333 1px solid;
+    }
+    .status a
+    {
+    
+    text-decoration:none
+    font-size: 11px;
+    }
+    
+    .timeago{
+       color:#999;
+    }
+    .mainbtn{
+    	margin-top: 10px;
+    	margin-bottom: 10px;
+    	display: none;
+    }
+    #progress{
+        top: 50%;
+    }
+    
+    </style>
+    <h1 class="no_bottom_border">Blog</h1>
+    <div id="btnHome" class="btnTopLeft  btnTopRightLeft"
+            ontouchend="x$('#btnHome').removeClass('btnHome_active');"
+            ontouchstart="x$('#btnHome').addClass('btnHome_active');" >&nbsp;</div>
+    <div id="tweets"></div>
+    <div id="progress" style="display:none;">Loading...<br/><img src="images/loading2.gif" alt=""/><br/><br/></div>
+    <div align="center">
+    
+        <div id="Play" style="display:none;"
+        	 class="mainbtn" 
+             onclick="LoadIt();" ontouchstart="document.getElementById('Play').innerHTML='Loading...';">
+              Load More
+        </div>
+    </div>
+    
+    <script src="js/NU.js"></script>
+    <script src="js/libs/json2.js"></script>
+	<script src="js/mylibs/helper.js"></script>
+    
+    <script type="text/javascript">
+    var pageNumber = 1;
+    var maxID = -1;
+    
+    function onloadme(){
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+
+    function onDeviceReady() {
+        document.addEventListener("menubutton", showAlertTweets, false);
+        LoadIt();
+    }
+
+    function showAlertTweets() {
+        navigator.notification.alert(
+            "Tap the Load More button at the bottom for more Blog posts.",
+            k,
+            'Tip:',
+            'Help'
+        );
+    }
+
+
+
+    function ptweet(read)
+    {
+        read = read.rss;
+        read = read.channel;
+        read = read.item;
+        
+		var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		var dowNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var tdata='';
+        
+        for (i in read)
+        {
+          	data =read[i];
+          	//var id = data.gd$when[0].startTime.substring(0,19);
+          	//if (maxID == id) {
+            //	continue;  //skip out of loop to next if first tweet of next series is the same as the last of the previous series
+          	//}
+          
+          	//maxID = id;
+          	
+          	var text=data.title["#text"];
+          	
+          	var pubDate = new Date(Date.parse(data.pubDate["#text"].substring(0,15)));
+          	var link = data.link["#text"];
+          	
+          	
+          	tdata+="<div class='status' id='divBlogId_" + i + "'>" + 
+            	"<div class='date_container floatLeft'>" +
+    			"  <div class='date_month'>" + monthNames[pubDate.getMonth()] + "</div>" + 
+    			"  <div class='date_day'>" + pubDate.getDate() + "</div>" +
+    			"  <div class='date_year'>" + pubDate.getFullYear() + "</div>" + 
+    			"</div>" + 
+    			"<div class='bar' style='height:48px;'></div>" + 
+    			"<div style='overflow:hidden;'>" + 
+    			"   <div class='font_18'>" + text + "</div>" + 
+    			"</div>" + 
+    			"</div>";
+
+
+        }
+        
+        document.getElementById("tweets").innerHTML += tdata;
+        document.getElementById('progress').style.display='none';
+        //document.getElementById('Play').style.display='block';
+        document.getElementById('Play').innerHTML = 'Load More';
+        
+        hideLoader();
+        
+        i=0;
+  	  	for (i in read){
+    		data =read[i];
+    
+    		t = 'divBlogId_' + i;
+    		s = data.link["#text"]; 
+   			createMBP(t,'doLink',s);
+   			//new MBP.fastButton(document.getElementById(t), function() {window.open(s,"_blank"); });
+
+	  	}
+    }
+
+
+	function LoadIt() {
+		document.getElementById('progress').style.display='block';
+		//navigator.notification.activityStart('Genesis','Loading...');
+   		var myURL='';
+   
+   		if (maxID == -1)
+     		myURL = 'http://rss.genesiseureka.com/GenesisChurchBlog';
+   		else
+     		myURL = 'http://rss.genesiseureka.com/GenesisChurchBlog';
+   		
+   		checkConnection();
+ 
+   		x$(window).xhr(myURL, {
+     		//async: true,
+     		method: "get",  
+     		callback: function(){
+     			domParser = new DOMParser();
+         		var xmlDoc=domParser.parseFromString(this.responseText,"text/xml");
+     			var t = xmlToJson(xmlDoc);
+       			ptweet(t);
+     		},
+     		error: function(){
+     			alert("Looks like there was an issue.  Please try again later.");
+     		}    
+  		});
+  		
+  		pageNumber++;
+	}
+	
+	new MBP.fastButton(document.getElementById("btnHome" ), function() { redirect('index.html');return false;  });
+    </script>
+
+    </body>
+    </html>

@@ -1,0 +1,119 @@
+<html manifest="default.appcache?v=1" class="no-js"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js" manifest="default.appcache?v=1"> <!--<![endif]-->
+
+<head>
+  <link rel="image_src" href="images/loading2.gif" / >
+  <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+  <link href="css/NU.css" rel="stylesheet" type="text/css">
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sermons</title>
+</head>
+<body onLoad="onloadme();">
+        <h1>Sermons</h1>
+        <div id="progress" style="display:none;">Loading...<br/><img src="images/loading2.gif" alt=""/><br/><br/></div>
+        <div id="btnHome" class="btnTopLeft  btnTopRightLeft"
+            ontouchend="x$('#btnHome').removeClass('btnHome_active');"
+            ontouchstart="x$('#btnHome').addClass('btnHome_active');" >&nbsp;</div>
+        <div id="seriesTitle" class="font_11" style="clear:both;background:#222;color:#888;padding:2px;"></div>
+        <div id="sermons"></div>
+        
+</body>
+
+    
+<script language="JavaScript" type="text/javascript" src="js/libs/xui.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/mylibs/helper.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/NU.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/libs/json2.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/jsonFind.js"></script>
+<script charset="utf-8" type="text/javascript">
+var SongId;
+function onloadme(){
+  document.addEventListener("deviceready", onDeviceReady, false);
+}
+
+var mySeriesId;
+
+function onDeviceReady() {
+  var Series = window.localStorage.getItem("Series");
+  mySeriesId = getQuerystring('SeriesId','');
+    
+  if (Series || checkConnection() == false)
+  	parseIt(Series, mySeriesId);
+  else
+  	LoadIt();
+}
+
+function LoadIt() {
+  showLoader('Loading...');
+  x$(window).xhr('http://genesiseureka.com/api/series/?sort=desc&count=all', {
+    async: true,
+    method: "get",   
+    callback: function(){
+      parseIt(this.responseText);
+      window.localStorage.setItem("Series",this.responseText);
+    }
+  });
+}
+
+
+function parseIt(response, mySeriesId){
+  var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var html = '';
+  var j = JSON.parse(response);
+  var sermon = null;
+  
+  // getObjects is from jsonFind.js - it parses json for specific SeriesId
+  var m = getObjects(j, 'series_id', mySeriesId);
+  var seriesTitle = m[0].title;
+  j = m[0].sermons;
+  
+  html += '<ul>'
+  for(var i = 0; i < j.length; i++){
+    sermon = j[i];
+    
+    var myDate = new Date(parseFloat(sermon.date)*1000);
+    
+	var myDescription = sermon.description.toString();
+	if (myDescription.length > 100)
+		myDescription = myDescription.substring(0,96) + '...';
+	
+    html += '<li id="divSongId_' + sermon.sermon_id + '" class="status">' + 
+    		'<div class="date_container floatLeft">' +
+    		'  <div class="date_month">' + monthNames[myDate.getMonth()] + '</div>' + 
+    		'  <div class="date_day">' + myDate.getDate() + '</div>' +
+    		'  <div class="date_year">' + myDate.getFullYear() + '</div>' +
+    		'</div>' + 
+    		'<div class="bar" style="height:48px;"></div>' + 
+    		'<div style="overflow:hidden;">' + 
+    		'<div>' +
+    		sermon.title + 
+    		'</div>' +
+    		'<div class="font_11 secondaryText">' + myDescription + '</div>' +
+    		'</div>' +
+    		'</li>';
+  }
+  html += '</ul>'
+  x$('#sermons').html(html);
+  x$('#seriesTitle').html('<i>From the series: ' + seriesTitle + '</i>');
+  i=0;
+  for(var i = 0; i < j.length; i++){
+    sermon = j[i];
+    
+    t = 'divSongId_' + sermon.sermon_id;
+    s = 'Sermon.html?Page=Song&SermonId=' + sermon.sermon_id + '&SeriesId=' + mySeriesId;
+    createMBP(t,'redirect',s);
+
+  }
+
+    hideLoader();
+}
+
+    new MBP.fastButton(document.getElementById("btnHome" ),    function() { redirect('Series.html');return false;  });
+
+</script>
+</html>

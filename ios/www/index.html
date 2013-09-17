@@ -1,0 +1,107 @@
+<html manifest="default.appcache?v=1" class="no-js"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js" manifest="default.appcache?v=1"> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/NU.css" rel="stylesheet" type="text/css" />
+  <title>NU Gameday</title>
+
+	</head>
+	<body>
+        <h1><div class="GenHeaderLogo"></div></h1>
+        <!--<img src="images/GenesisLogoWords.png" class="bg" />-->
+        <div style="display:none;" id="progress">
+        	Loading...
+        	<br/>
+        	<img src="images/loading2.gif" alt=""/>
+        	<br/>
+        	<br/>
+        </div>
+
+		<div style="width:100%;">
+
+        
+        <div align="center" class="homeicon floatLeft" id="lnkFun"  ontouchend="x$('#lnkFun').removeClass('radial');" ontouchstart="x$('#lnkFun').addClass('radial');">
+        	<img src="images/Gen/calendar_80.png" id="imgFun" width="80px" height="80px"/> 
+        	<br/>
+        	<div class="btnLabel">
+        		Events
+        	</div>
+        </div>
+        
+        <div id="lnkSchedule" align="center" class="homeicon floatRight"  ontouchend="x$('#lnkSchedule').removeClass('radial');" ontouchstart="x$('#lnkSchedule').addClass('radial');"> 
+        	<img src="images/Gen/pencil_80.png" id="imgGames" width="80px" height="80px"/>
+        	<br/>
+        	<div class="btnLabel">
+        		Blog
+        	</div>
+        </div>
+        
+        <div align="center" class="homeicon floatLeft" id="lnkWallpaper" ontouchend="x$('#lnkWallpaper').removeClass('radial');" ontouchstart="x$('#lnkWallpaper').addClass('radial');" >
+        	<img src="images/Gen/info_80.png" id="imgWallpaper"  width="80px" height="80px"/>
+        	<br/>
+        	<div class="btnLabel">
+        		Info
+        	</div>
+        </div>
+                
+        <div align="center" class="homeicon floatRight" id="lnkSongs"  ontouchend="x$('#lnkSongs').removeClass('radial');" ontouchstart="x$('#lnkSongs').addClass('radial');">
+        	<img src="images/Gen/mic_80_grunge.png" id="imgSongs" width="80px" height="80px"/> 
+        	<br/>
+        	<div class="btnLabel">
+        		Sermons
+        	</div>
+        </div>
+        
+        <div align="center" class="homeicon floatRight" id="lnkBible"  ontouchend="x$('#lnkBible').removeClass('radial');" ontouchstart="x$('#lnkBible').addClass('radial');">
+        	<img src="images/Gen/bible_80.png" id="imgLinks" width="80px" height="80px"/>
+        	<br/>
+        	<div class="btnLabel">
+        		Bible
+        	</div>
+        </div>
+        
+		<div align="center" class="homeicon floatLeft" id="lnkTweets"  ontouchend="x$('#lnkTweets').removeClass('radial');" ontouchstart="x$('#lnkTweets').addClass('radial');">
+        	<img src="images/Gen/twitter_80.png" id="imgTweets" width="80px" height="80px"/> 
+        	<br/>
+        	<div class="btnLabel">
+        		Tweets
+        	</div>
+        </div>
+        
+      
+      </div>
+    </body>
+
+
+<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script src="js/libs/xui.js"></script>
+<script src="js/mylibs/helper.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/NU.js"></script>
+<script type="text/javascript">
+
+document.addEventListener("deviceready", onDeviceReady, false);
+//navigator.app.exitApp();
+//new MBP.fastButton(document.getElementById("lnkExit"     ), function() {x$('#lnkExit').removeClass('radial');     navigator.app.exitApp(); });
+new MBP.fastButton(document.getElementById("lnkFun"      ), function() {x$('#lnkFun').removeClass('radial');      redirect('Events.html');return false; });
+new MBP.fastButton(document.getElementById("lnkSchedule" ), function() {x$('#lnkSchedule').removeClass('radial'); redirect('Blogs.html');return false; });
+new MBP.fastButton(document.getElementById("lnkWallpaper"), function() {x$('#lnkWallpaper').removeClass('radial');redirect('Info.html'); });
+new MBP.fastButton(document.getElementById("lnkSongs"    ), function() {x$('#lnkSongs').removeClass('radial');    redirect('Series.html');return false; });
+new MBP.fastButton(document.getElementById("lnkTweets"), function() {x$('#lnkTweets').removeClass('radial');      redirect('Tweets.html'); });
+new MBP.fastButton(document.getElementById("lnkBible"    ), function() {x$('#lnkBible').removeClass('radial');    redirect('BibleSearch.html'); });
+
+
+
+
+function onDeviceReady() {
+    x$('#progress').setStyle('display','none');
+    x$('#progressbak').setStyle('display','none');
+  }
+
+</script>
+</html>

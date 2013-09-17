@@ -1,0 +1,163 @@
+<html manifest="default.appcache?v=1" class="no-js"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js" manifest="default.appcache?v=1"> <!--<![endif]-->
+
+<head>
+  <link rel="image_src" href="images/loading2.gif" / >
+  <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+  <link href="css/NU.css" rel="stylesheet" type="text/css">
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Series</title>
+  <style>
+  .sermon_series_img_wrapper {width:30px;float:left;}
+  .sermon_series_img{max-width:100%;height:auto;display:block;}
+  </style>
+</head>
+<body onLoad="onloadme();">
+        <h1 class="no_bottom_border">Sermon Series</h1>
+        <div id="series"></div>
+    
+        <div id="btnHome" class="btnTopLeft  btnTopRightLeft"
+            ontouchend="x$('#btnHome').removeClass('btnHome_active');"
+            ontouchstart="x$('#btnHome').addClass('btnHome_active');" >&nbsp;</div>
+
+        <div id="progress" style="display:none;">Loading...<br/><img src="images/loading2.gif" alt=""/><br/><br/></div>
+    
+		<div ontouchend="x$('#divRefresh').removeClass('divRefresh_active');"
+             ontouchstart="x$('#divRefresh').addClass('divRefresh_active');LoadIt();"
+        	 class="btnTopRightLeft btnTopRight" id="divRefresh">
+        		
+	    </div>
+	   
+</body>
+
+<script language="JavaScript" type="text/javascript" src="js/libs/xui.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/mylibs/helper.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/NU.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/libs/json2.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/jsonFind.js"></script>
+<script charset="utf-8" type="text/javascript">
+var SongId;
+function onloadme(){
+  document.addEventListener("deviceready", onDeviceReady, false);
+}
+function onDeviceReady() {
+    var latestSermonDate = localStorage.getItem("latestSermonDate");
+    var go = false;
+    
+    if (latestSermonDate) {
+        var latest = new Date(parseFloat(latestSermonDate)*1000);
+        var today = new Date();
+        
+        if (today - latest > 1000* 60 * 60 * 24 * 7)
+    	go = true;
+    }
+    
+    var Series = localStorage.getItem("Series");
+    
+    if (go)
+  	LoadIt();
+    else {
+        if (Series || checkConnection() == false)
+  		parseIt(Series);
+        else
+  		LoadIt();
+    }
+}
+
+function LoadIt() {
+  showLoader('Loading...');
+  x$(window).xhr('http://genesiseureka.com/api/series/?sort=desc&count=all', {
+    async: true,
+    method: "get",   
+    callback: function(){
+      parseIt(this.responseText);
+      localStorage.setItem("Series",this.responseText);
+    }
+  });
+}
+
+
+function parseIt(response){
+    var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var html = '';
+    var j = JSON.parse(response);
+    var series = null;
+    var localLatestDate;
+    var latestSeriesId;
+    
+    
+    html += '<ul>'
+    for(var i = 0; i < j.length; i++){
+        series = j[i];
+        var startDate = new Date(parseFloat(series.start_date)*1000);
+        var endDate = new Date(parseFloat(series.end_date)*1000);
+        // This combs through the series and pulls the start date into a var to check for latest series start date.  That is designated as the
+        // latest Series.  Then the latest series is sent to the findLatestSermonDate() fn to find the latest sermon date and set that in local storage.
+        // On the next load of the page, the latest sermon date is checked to see if we are > 7 days past it, and if so, reload the whole bunch of sermon data.
+        // Otherwise, use localstorage copy.  just to cut down on db trips.
+        if (!localLatestDate || startDate > localLatestDate){
+            latestSeriesId = series.series_id;
+            localLatestDate = startDate;	
+        }
+
+	
+    html += '<li id="divSongId_' + series.series_id + '">' + 
+    		'<div class="sermon_series_img_wrapper">' +
+    		/* '  <img class="sermon_series_img" src="' + series.image + '"</img>' + */
+    		'</div>' + 
+    		/* '<div class="bar height_35"></div>' + */ 
+    		'<div style="overflow:hidden;">' + 
+    		series.title + 
+    		'</div>' +
+    		'<div style="font-size:11px;">' + 
+    			monthNames[startDate.getMonth()] + ' ' + startDate.getDate() + ', ' + startDate.getFullYear() + ' - ' + 
+    			monthNames[endDate.getMonth()] + ' ' + endDate.getDate() + ', ' + endDate.getFullYear() +
+    		'</div>' +
+    		'</li>';
+  }
+  html += '</ul>';
+  x$('#series').html(html);
+  i=0;
+  for(var i = 0; i < j.length; i++){
+    series = j[i];
+    
+    t = 'divSongId_' + series.series_id;
+    s = 'Sermons.html?Page=Songs&SeriesId=' + series.series_id;
+    createMBP(t,'redirect',s);
+
+  }
+
+  hideLoader();
+    
+    findLatestSermonDate(j, latestSeriesId);
+}
+    
+    function findLatestSermonDate(j, mySeriesId){
+        var m = getObjects(j, 'series_id', mySeriesId);
+        j = m[0].sermons;
+        
+        for(var i = 0; i < j.length; i++){
+            sermon = j[i];
+            
+            var myDate = new Date(parseFloat(sermon.date)*1000);
+            var storedDate;
+            if (localStorage.getItem('latestSermonDate'))
+            storedDate = new Date(parseFloat(localStorage.getItem('latestSermonDate'))*1000);
+            
+            if (!storedDate || myDate > storedDate){
+                localStorage.setItem('latestSermonDate', sermon.date)
+            }
+            
+            
+        }
+    }
+    
+    new MBP.fastButton(document.getElementById("btnHome" ),    function() { redirect('index.html');return false;  });
+
+</script>
+</html>

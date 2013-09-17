@@ -1,0 +1,524 @@
+body {
+    background-color: #3e3e3e;
+    color: #ccc;
+    font-family: Helvetica;        
+    font-size: 12px;
+    margin: 0;
+    padding: 0;  
+    -webkit-tap-highlight-color:  rgba(255, 255, 255, 0); /* gets rid of stock Android green highlight around clicked item*/           
+}
+.bg {
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index:-1;
+}
+.GenHeaderLogo {
+    background: url('../images/GenesisLogoWords.png') center no-repeat #333;
+    background-size: 108px 35px;
+    height:35px;
+    text-align:center;
+    min-width:130px;
+    margin:0 auto;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+       only screen and (-o-min-device-pixel-ratio: 3/2),
+       only screen and (min--moz-device-pixel-ratio: 1.5),
+       only screen and (min-device-pixel-ratio: 1.5) {
+            
+            .GenHeaderLogo {
+                background: url('../images/GenesisLogoWords@2x.png') center no-repeat #333;
+            }
+}
+
+.green,
+.esv .surrounding-chapters a, 
+.esv .audio a
+ {
+	background:#8db836;
+	color: #F2FFE8;
+}
+input.mainbtn{
+	border:0;
+}
+h1 {
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    text-shadow:  0px 0px 3px #462749;
+    border-bottom: 1px solid #58595A;
+    color: #ccc;
+    display: block;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 10px 8px;
+    text-align: center;
+    text-decoration: none;
+}
+h1.no_bottom_border {
+	border-bottom: 0;
+}
+
+.secondaryText {
+	color:#999;
+}
+.font_9 {
+	font-size: 9px;
+}
+.font_11 {
+	font-size: 11px;
+}
+.font_13 {
+	font-size: 13px;
+}
+.font_18 {
+	font-size: 18px;
+}
+.homeicon{
+    text-shadow:  0px 0px 2px #808080;    
+    font-size:1.8em;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    text-align:center;
+    text-decoration:none;
+    width:50%;
+}
+.homeicon:active,
+.homeicon:hover{
+	cursor:pointer;
+}
+.btnLabel{
+	padding-top:5px;
+	padding-right:5px;
+}
+.hileft{
+    float:left;
+}
+.hiright{
+    float:right;
+}
+
+ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0;
+}
+ul li  {
+    border-top: 1px solid #58595A;
+    border-bottom: 1px solid #111;
+    display: block;
+    padding: 10px 10px;
+    text-decoration: none;
+    font-size:1.6em;
+    
+}
+
+#progress {
+    -webkit-box-shadow: 0px 0px 22px #accb6b;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border: 2px solid #000;
+    background-color: #333;
+    color: #ccc;
+    font-size: 1.4em;
+    font-weight: bold;
+    height:20%;
+    max-height:125px;
+    left: 18.75%;
+    line-height: 2.15em;
+    margin: 0 auto;
+    position: absolute;
+    text-align: center;
+    width: 62.5%;
+	top:40%;
+    vertical-align:middle;
+}
+#progressbak {
+background:#000000;
+opacity: 0.96;
+height:100%;
+width:100%;
+}
+
+.date_month, .date_year{
+	text-align:center;font-size:11px;
+}
+.date_day{
+	text-align:center;font-size:16px;
+}
+.date_container{
+	min-width:30px;
+}
+.bar {
+	width:2px;
+	height:45px;
+	background:#DDD;
+	float:left;
+	margin:0 5px;
+}
+.height_35 {
+	height: 35px;
+}
+
+/* ESV styles */
+.verse-num {color:#888;font-size:0.85em;vertical-align:super;}
+.esv{padding:3px;}
+.esv h2 {font-size:1.4em;}
+
+
+.space{width:3%;}
+.Team{
+float:left;
+font-size:1.5em;
+width:75%;
+}
+.score{
+width:25%;
+float:right;
+padding-top:20px;
+font-size:2em;
+vertical-align:middle;
+}
+
+.tv_radio{
+width:25%;
+float:right;
+display:inline;
+right:-5px;
+padding-top:40px;
+font-size:0.95em;
+vertical-align:middle;
+}
+
+.Date{
+font-size:0.84em;
+width:32%;
+}
+.Media{
+font-size:0.78em;
+width:15%;
+}
+
+.Team_img{vertical-align:middle;
+}
+.Song{
+font-size:1.2em;
+font-style:italic;
+line-height:1.4em;
+text-align:center;
+padding-top:15px;
+}
+
+.matchup {
+width:100%;
+}
+
+.btn {position:absolute;
+    top:6px;right:6px;
+    cursor:pointer;
+}
+
+.play{
+	background: url("images/play.png") no-repeat;
+	max-width:100%;
+}
+
+
+.rightbtn {text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.1em;
+	padding: 10px 20px;
+    width:65%;
+    min-height:1.95em;
+}
+
+.Address{font-size:1em;}
+.GameItem{font-size:0.85em;}
+.GameH2H {
+    background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#462749),
+		to(#2F0837));
+    border 3px solid #666;
+    text-shadow:  0px 0px 3px #000;
+    color: #f4efe9;
+    font-weight: bold;
+    width:100%;
+    overflow:hidden;
+}
+
+.mainbtn, 
+.esv .surrounding-chapters a, 
+.esv .audio a {
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 23px;
+	padding: 10px 20px;
+}
+.esv a, .link_like {
+	color:#8db836;
+}
+.link_like {
+	text-decoration:underline;
+}
+.esv a:hover{
+	background: #8db836;
+	color: #F2FFE8;
+}
+.esv .surrounding-chapters a, .esv .audio a {
+	font-size:12px;
+	text-decoration:none;
+	padding:5px 10px;
+	
+}
+.esv h2 {
+	font-size:0;
+	color:#3e3e3e;
+	text-align:center;
+}
+.esv .surrounding-chapters {
+	font-size:22px;
+	color: #ccc; 
+	line-height:85px !important;
+	padding-top:30px !important;
+}
+
+.esv .audio {
+	position: absolute;
+	left: 10px;
+	top: 98px;
+	color: #F2FFE8;
+}
+.esv_audio_position{
+	position: absolute;
+	left: 85px;
+	top: 100px;
+}
+.esv.copyright{
+	font-size:9px;
+	margin-top:10px;
+}
+
+.btnContainer, .mainbtnContainer {
+	padding:1em 1em 1em 6em;
+}
+
+.mainbtn_TouchStart{
+	background: -webkit-gradient(linear, left top, left bottom, from(#8db836),to(#F2FFE8));
+}
+.radial{
+	color:#333;
+	background: -webkit-gradient(linear, left top, right bottom, from(#F2FFE8),to(#8db836)); /*-webkit-radial-gradient(circle, white, black);*/
+}
+.btnRefresh_TouchStart{
+	-webkit-box-shadow: 0px 0px 12px #f4efe9, inset 0px 0px 12px #f4efe9;
+	        box-shadow: 0px 0px 12px #f4efe9, inset 0px 0px 12px #f4efe9;
+	/*-webkit-border-radius: 8px;
+	   -moz-border-radius: 8px;
+	        border-radius: 8px;*/
+}
+
+
+
+/* Sermon page */
+.sermonPage_series{
+	padding-left:5px;
+	font-size:10px;
+}
+.sermonPage_title {
+	padding-left:5px;
+	font-size:18px;
+}
+.sermonPage_container{
+	width:80%;
+	float:left;
+	overflow:hidden;
+}
+
+.floatLeft {
+	float:left;
+}
+.floatRight {
+	float: right;
+}
+.audioBtn {
+ 	width:15%;
+ 	padding:0px 5px;
+ 	margin:8px 14px;
+ }
+ 
+ .audioBtn_container {
+ 	clear:both;
+ 	width:100%;
+ 	overflow:hidden;
+ }
+
+/* Audio slider */
+.audio_container {
+	width:100%;
+	clear:both;
+	height:30px;
+	display: none;
+	margin-bottom:15px;
+}
+.audio_position{
+	clear:both;
+	margin:0 auto;
+	padding-left:10px;
+	width:18%;
+	height:20px;
+}
+.slider_container{
+	width:75%;
+	float:left;
+	height:20px;
+	margin-bottom:15px;
+}
+.slider_green{
+	width:0%;
+}
+.slider   
+{ 
+	width:100%;
+	padding-right:10px;
+  	-webkit-user-select: none;
+  	-webkit-tap-highlight-color: transparent;
+  	background-color:#333;
+  	height: 20px;;
+}
+.slider > div { 
+	height:100%; 
+}
+
+
+/* Text Resizer */
+.textResize {
+	display:none;
+	bottom:0;
+	position:fixed;
+	left:0;
+	opacity: 0.9;
+	width:100%;
+	text-align:center;
+}
+.textResizeSmallerBigger {
+	font-size:1.6em;
+	float:left;
+	width:50%;
+	height:50px;
+	line-height:50px;
+}
+.textResizeBorder {
+	width:1px;
+	background:#F2FFE8;
+	float:left;
+	height:50px;
+}
+.textResizeClose {
+	border-top:solid 1px #F2FFE8;
+	line-height:50px;
+	width:100%;
+	height:50px;
+	margin-top:15px;
+	clear:both;
+}
+
+
+/* Tweets & Events */
+
+  
+    .status
+    {
+      min-height:54px;
+      padding:6px;
+      font-size: 15px;
+      background:transparent;
+      border-top: 1px solid #58595A;
+      border-bottom: 1px solid #111;
+    }
+    .status a
+    {
+    color:#8db836;
+    text-decoration:none
+    font-size: 11px;
+    }
+    .status a:hover{
+      color:#F2FFE8;
+      background-color:#8db836;
+    }
+    .twitter_image{
+      float:left;
+      margin-right:14px;
+      width:50px;
+      height:50px;
+      padding:3px;
+    }
+    
+    .hide_on_load {
+    	display:none;
+    }
+/* end Tweets & Events */    
+
+#searchBar{
+	background:#333;
+    width:100%;
+    height:30px;
+    text-align:center;
+    padding: 5px 0;
+}
+
+.txtBibleSearch {
+	outline:none;  /* this fixes strange position:fixed issue in android that nudges element to right a bit, used to fix text resize */
+	height:25px;
+    width:85%;
+}
+.txtBibleSearch_Container {
+    float:left;
+    width:70%
+}
+.BibleSearch_Spacer {
+    width:5%;
+    float:left;
+}
+.btnBibleSearch {
+	font-size:13px;
+	width:15%;
+    float:left;
+}
+
+.btnTopRightLeft {
+	text-align:center;
+	position:absolute;
+    top: 0px;
+    cursor:pointer;
+    width:40px;
+    height:45px;
+    padding: 2px 5px;
+}
+
+.btnTopLeft {	
+    left:0px;
+}
+.btnTopRight {
+    right:0px;
+}
+
+#btnHome{
+    background: url("../images/Gen/back_40.png") no-repeat center center;
+}
+.btnHome_active {
+    background: url("../images/Gen/back_40_active.png") no-repeat center center !important;
+}
+#Aa {
+    background: url("../images/Gen/resize_40.png") no-repeat center center;
+}
+.Aa_active {
+    background: url("../images/Gen/resize_40_active.png") no-repeat center center !important;
+}
+#divRefresh {
+    background: url("../images/Gen/refresh_40.png") no-repeat center center;
+}
+.divRefresh_active {
+    background: url("../images/Gen/refresh_40_active.png") no-repeat center center !important;
+}

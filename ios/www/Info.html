@@ -1,0 +1,139 @@
+<html manifest="default.appcache?v=1" class="no-js"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js" manifest="default.appcache?v=1"> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/NU.css" rel="stylesheet" type="text/css" />
+  <title>NU Gameday</title>
+
+	</head>
+	<body onLoad="javascript:onloadme();">
+        <h1>Info</h1>
+        <div style="font-size:1.6em;padding:10px 0;"><b>WHEN:</b> Sundays @ 10:00am</div>
+        <div style="font-size:1.6em;padding:10px 0;"><b>WHERE:</b> Eureka High School Theater</div>
+        <div id="progress" style="display:none;">Loading...<br/><img src="images/loading2.gif" alt=""/><br/><br/></div>
+        <div id="btnHome" class="btnTopLeft  btnTopRightLeft"
+            ontouchend="x$('#btnHome').removeClass('btnHome_active');"
+            ontouchstart="x$('#btnHome').addClass('btnHome_active');" >&nbsp;</div>
+        
+        <div id="divDirections" class="mainbtn green">Get Directions</div>
+        <br/>
+        <div id="divGenesis" class="mainbtn green">Visit the Genesis Website</div>
+        <br/>
+        <div id="divKoinonia" class="mainbtn green">Visit Koinonia</div>
+        <br/>
+        <div id="divTwitter" class="mainbtn green">Visit Genesis on Twitter</div>
+        <br/>
+        <div id="divFacebook" class="mainbtn green">Visit Genesis on Facebook</div>
+        <br/>
+        <div id="divFlickr" class="mainbtn green">Visit Genesis on Flickr</div>
+        <br/>
+    </body>
+
+<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/NU.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/mylibs/helper.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/libs/xui.js"></script>
+
+<script>
+function onloadme() {
+  document.addEventListener("deviceready", onDeviceReady, false);
+}
+    function onDeviceReady() {
+        if (checkConnection()){
+		showLoader('Loading...');
+		startMapLink();
+	}
+}
+
+
+new MBP.fastButton(document.getElementById("divGenesis" ), function() {window.open("http://www.genesiseureka.com","_blank"); });
+new MBP.fastButton(document.getElementById("divKoinonia"), function() {window.open("http://koinonia.genesiseureka.com","_blank"); });
+new MBP.fastButton(document.getElementById("divTwitter" ), function() {window.open("http://twitter.com/genesiseureka","_blank"); });
+new MBP.fastButton(document.getElementById("divFacebook"), function() {window.open("http://www.facebook.com/genesiseureka","_blank"); });
+new MBP.fastButton(document.getElementById("divFlickr"),   function() {window.open("http://m.flickr.com/#/photos/genesischurch","_blank"); });
+new MBP.fastButton(document.getElementById("btnHome" ),    function() { redirect('index.html');return false;  });
+
+//iOS6 must use Apple Map Links to launch native mapping tools, but for all others (iOS < 6 and Android), use Google Maps to launch native mapping.
+// http://handleopenurl.com/scheme/map
+function fn_iOS_test() {
+ 	 var iOS_test_return = navigator.userAgent.match(/iPhone|iPad|iPod/i) ? true : false;
+ 	 return !!iOS_test_return;
+}
+  
+  
+  
+/*  Setting up directions map link  */
+var currentLocation = "";
+var strlatlng = "38.515534,-90.626307";
+  
+function startMapLink(){
+   	navigator.geolocation.getCurrentPosition(
+   		geoSuccess,
+   		geoError);
+}
+  
+function geoSuccess(position) {
+  	
+  	//This pulls the geolocation of the user from localstorage for directions
+    var currentLocation_Lat = position.coords.latitude;
+    var currentLocation_Lng = position.coords.longitude;
+    
+    if (currentLocation_Lng != null && currentLocation_Lat != null)
+    	currentLocation = currentLocation_Lat + ',' + currentLocation_Lng;
+    
+    finishMapLink();
+}
+  
+function geoError(){
+  	finishMapLink();
+}
+     
+  
+  
+    function finishMapLink(){
+        var iOS_test = fn_iOS_test();
+        //By default, use maps.google.com - this will work for Android.
+        var maps_Switch = 'http://maps.google.com/maps?';
+   
+        if (iOS_test){
+            var safari_test_return = navigator.userAgent.match(/Safari/i) ? true : false;
+   	   	
+            var iOS6_test_return = navigator.userAgent.match(/OS\s6_/i) ? true : false;
+            if (!!iOS6_test_return){
+                if (!!safari_test_return)
+                    maps_Switch = 'http://maps.apple.com/?';
+                else
+                    maps_Switch = 'maps:';
+            }
+            else {
+                //iOS 5 or lower
+                if (!!safari_test_return)
+                    maps_Switch = 'http://maps.google.com/maps?';
+                else
+                    maps_Switch = 'comgooglemaps://?';
+            }
+        }
+   
+   
+        var directions = maps_Switch + 'daddr=' + strlatlng;
+        if (currentLocation.length > 0)
+            directions += '&saddr=' + currentLocation;
+        directions = encodeURI(directions);
+   
+        if (maps_Switch == 'comgooglemaps://?' || maps_Switch == 'maps:')
+            directions = directions.replace(/%20/g,'+');
+   
+   
+        // in new versions of Cordova like 2.3, you have to use target of "_system" to get map links to open in native maps.
+        new MBP.fastButton(document.getElementById("divDirections"), function() {window.open(directions,"_system"); });
+   
+        hideLoader();
+}
+</script>
+</html>
